@@ -1,3 +1,5 @@
+A hacked version of PouchDB for React Native. Please read [this blogpost](https://dev.to/craftzdog/hacking-pouchdb-to-use-on-react-native-1gjh) for detail.
+
 [PouchDB](https://pouchdb.com/) – The Database that Syncs!
 =========
 
