@@ -1,0 +1,36 @@
+{
+  "name": "pouchdb-react-native-example",
+  "description": "Example app for pouchdb-react-native",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "clean": "watchman watch-del-all && rm -fr $TMPDIR/metro*"
+  },
+  "dependencies": {
+    "@craftzdog/pouchdb-binary-utils-react-native": "^7.2.2",
+    "@craftzdog/pouchdb-core-react-native": "^7.2.2",
+    "buffer": "npm:@craftzdog/react-native-buffer",
+    "events": "^3.2.0",
+    "pouchdb-adapter-http": "7.2.2",
+    "pouchdb-adapter-react-native-sqlite": "^3.0.1",
+    "pouchdb-mapreduce": "7.2.2",
+    "pouchdb-replication": "7.2.2",
+    "process": "^0.11.10",
+    "react": "16.13.1",
+    "react-native": "0.63.4",
+    "react-native-get-random-values": "^1.5.1",
+    "react-native-pouchdb-md5": "^7.2.3",
+    "react-native-quick-base64": "^0.1.2",
+    "react-native-quick-md5": "^0.1.1",
+    "react-native-sqlite-2": "^3.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/runtime": "^7.12.5",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "metro-react-native-babel-preset": "^0.64.0"
+  }
+}
