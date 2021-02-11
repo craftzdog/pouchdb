@@ -65,7 +65,7 @@ async function runPouchDB() {
 }
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [result, setResult] = React.useState();
 
   React.useEffect(() => {
     console.log('global.base64FromArrayBuffer:', global.base64FromArrayBuffer);

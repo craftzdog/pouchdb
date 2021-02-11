@@ -10,7 +10,7 @@
     "clean": "watchman watch-del-all && rm -fr $TMPDIR/metro*"
   },
   "dependencies": {
-    "@craftzdog/pouchdb-binary-utils-react-native": "^7.2.2",
+    "@craftzdog/pouchdb-binary-utils-react-native": "^7.2.4",
     "@craftzdog/pouchdb-core-react-native": "^7.2.2",
     "buffer": "npm:@craftzdog/react-native-buffer",
     "events": "^3.2.0",
