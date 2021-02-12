@@ -1,46 +1,105 @@
-[PouchDB](https://pouchdb.com/) – The Database that Syncs!
-=========
+# [PouchDB](https://pouchdb.com/) for React Native
 
 [![Build Status](https://travis-ci.org/pouchdb/pouchdb.svg)](https://travis-ci.org/pouchdb/pouchdb) [![Coverage Status](https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_100.svg)](https://coveralls.io/github/pouchdb/pouchdb?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/pouchdb/pouchdb.svg)](https://greenkeeper.io/) [![npm version](https://img.shields.io/npm/v/pouchdb.svg)](https://www.npmjs.com/package/pouchdb) [![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/pouchdb/badge?style=rounded)](https://www.jsdelivr.com/package/npm/pouchdb)
 
-PouchDB is an open-source JavaScript database inspired by [Apache CouchDB](http://couchdb.apache.org/) that is designed to run well within the browser.
+A PouchDB fork for React Native with binary attachments support.
 
-PouchDB was created to help web developers build applications that work as well offline as they do online.
+## Using PouchDB
 
-Using PouchDB
--------------
+Check out [a small example](./example).
 
-To get started using PouchDB, check out the [web site](https://pouchdb.com) and [API documentation](https://pouchdb.com/api.html).
+### Install
 
-Getting Help
-------------
+1. Install dev package:
 
-The PouchDB community is active [on Freenode IRC](https://www.irccloud.com/invite?channel=pouchdb&hostname=irc.freenode.net&port=6697&ssl=1), in [the Google Groups mailing list](https://groups.google.com/forum/#!forum/pouchdb), and [on StackOverflow](http://stackoverflow.com/questions/tagged/pouchdb). Or you can [tweet @pouchdb](http://twitter.com/pouchdb)!
+   ```
+   yarn add -D babel-plugin-module-resolver
+   ```
 
-If you think you've found a bug in PouchDB, please write a reproducible test case and file [a Github issue](https://github.com/pouchdb/pouchdb/issues). You can start with a [template we have built on glitch](https://glitch.com/~pouchdb-bug-helper).
+2. Install polyfill packages:
 
-Prerelease builds
-----
+   ```sh
+   yarn add events process base-64 react-native-get-random-values react-native-quick-md5
+   ```
 
-If you like to live on the bleeding edge, you can build PouchDB from source using these steps:
+3. Install pouchdb packages:
 
-    git clone https://github.com/pouchdb/pouchdb.git
-    cd pouchdb
-    npm install
+   ```sh
+   yarn add @craftzdog/pouchdb-core-react-native @craftzdog/pouchdb-binary-utils-react-native pouchdb-adapter-http pouchdb-mapreduce pouchdb-replication react-native-pouchdb-md5
+   ```
 
-After running these steps, the browser build can be found in `packages/node_modules/pouchdb/dist/pouchdb.js`.
+   Note: `@craftzdog/pouchdb-replication-react-native` is no longer needed.
 
-Changelog
-----
+4. Install storage adapter packages:
 
-PouchDB follows [semantic versioning](http://semver.org/). To see a changelog with all PouchDB releases, check out the [Github releases page](https://github.com/pouchdb/pouchdb/releases).
+   ```sh
+   yarn add pouchdb-adapter-react-native-sqlite react-native-sqlite-2
+   ```
 
-For a concise list of breaking changes, there's the [wiki list of breaking changes](https://github.com/pouchdb/pouchdb/wiki/Breaking-changes).
+5. Install CocoaPods:
 
-Keep in mind that PouchDB is auto-migrating, so a database created in 1.0.0 will still work if you open it in 4.0.0+. Any release containing a migration is clearly marked in the release notes.
+   ```sh
+   cd ios && pod install
+   ```
 
-Contributing
-------------
+### Configure
+
+1. Make a `shim.js`:
+
+   ```js
+   import "react-native-get-random-values";
+   import { decode, encode } from "base-64";
+
+   if (typeof process === "undefined") {
+     global.process = require("process");
+   } else {
+     const bProcess = require("process");
+     for (var p in bProcess) {
+       if (!(p in process)) {
+         process[p] = bProcess[p];
+       }
+     }
+   }
+
+   if (!global.btoa) {
+     global.btoa = encode;
+   }
+
+   if (!global.atob) {
+     global.atob = decode;
+   }
+
+   process.browser = true;
+   ```
+
+   then, require it at the beginning of your `index.js`.
+
+2. Edit your `babel.config.js` like so:
+
+   ```
+   module.exports = {
+     presets: ['module:metro-react-native-babel-preset'],
+     plugins: [
+       [
+         'module-resolver',
+         {
+           alias: {
+             'pouchdb-md5': 'react-native-pouchdb-md5',
+             'pouchdb-binary-utils':
+               '@craftzdog/pouchdb-binary-utils-react-native',
+           },
+         },
+       ],
+     ],
+   };
+   ```
+
+## See also
+
+- [craftzdog/react-native-pouchdb-md5: PouchDB utilities for calculating MD5 checksums for React Native](https://github.com/craftzdog/react-native-pouchdb-md5)
+- [craftzdog/pouchdb-adapter-react-native-sqlite: PouchDB adapter using ReactNative SQLite as its backing store](https://github.com/craftzdog/pouchdb-adapter-react-native-sqlite#readme)
+
+## Contributing
 
 We're always looking for new contributors! If you'd like to try your hand at writing code, writing documentation, designing the website, writing a blog post, or answering [questions on StackOverflow](http://stackoverflow.com/search?tab=newest&q=pouchdb), then we'd love to have your input.
 
