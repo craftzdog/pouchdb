@@ -12,7 +12,6 @@
   "dependencies": {
     "@craftzdog/pouchdb-binary-utils-react-native": "^7.2.4",
     "@craftzdog/pouchdb-core-react-native": "^7.2.2",
-    "buffer": "npm:@craftzdog/react-native-buffer",
     "events": "^3.2.0",
     "pouchdb-adapter-http": "7.2.2",
     "pouchdb-adapter-react-native-sqlite": "^3.0.1",
