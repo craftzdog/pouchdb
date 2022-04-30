@@ -1,12 +1,10 @@
 # [PouchDB](https://pouchdb.com/) for React Native
 
-[![Build Status](https://github.com/pouchdb/pouchdb/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/pouchdb/pouchdb/actions/workflows/ci.yml?query=branch%3Amaster) [![Coverage Status](https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_100.svg)](https://coveralls.io/github/pouchdb/pouchdb?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/pouchdb/pouchdb.svg)](https://greenkeeper.io/) [![npm version](https://img.shields.io/npm/v/pouchdb.svg)](https://www.npmjs.com/package/pouchdb) [![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/pouchdb/badge?style=rounded)](https://www.jsdelivr.com/package/npm/pouchdb)
+A performant fork of PouchDB for React Native.
 
-A PouchDB fork for React Native with binary attachments support.
+**NOTE**: The attachment support has been dropped since I no longer store binary data in PouchDB.
 
-## Using PouchDB
-
-Check out [a small example](./example).
+## How to use PouchDB on React Native with SQLite
 
 ### Install
 
@@ -19,27 +17,38 @@ Check out [a small example](./example).
 2. Install polyfill packages:
 
    ```sh
-   yarn add events process base-64 react-native-get-random-values react-native-quick-md5
+   yarn add events react-native-get-random-values react-native-quick-base64
    ```
 
 3. Install pouchdb packages:
 
    ```sh
-   yarn add @craftzdog/pouchdb-core-react-native @craftzdog/pouchdb-binary-utils-react-native pouchdb-adapter-http pouchdb-mapreduce pouchdb-replication react-native-pouchdb-md5
+   yarn add pouchdb-core pouchdb-replication pouchdb-mapreduce pouchdb-adapter-http
    ```
 
-   Note: `@craftzdog/pouchdb-replication-react-native` is no longer needed.
+4. Install patched package:
+
+   ```sh
+   yarn add @craftzdog/pouchdb-collate-react-native
+   ```
+
+   It avoids using ['\u0000' chars](https://github.com/facebook/react-native/issues/12731) for indexing (See [this commit](https://github.com/craftzdog/pouchdb-react-native/commit/228f68220fe31236f6630b71c030eef29ae6e7a8)).
+   
 
 4. Install storage adapter packages:
 
    ```sh
-   yarn add pouchdb-adapter-react-native-sqlite react-native-sqlite-2
+   yarn add pouchdb-adapter-react-native-sqlite react-native-quick-sqlite react-native-quick-websql
    ```
+
+   - [react-native-quick-sqlite](https://github.com/ospfranco/react-native-quick-sqlite) - A fast bindings via JSI for SQLite
+   - [react-native-quick-websql](https://github.com/craftzdog/react-native-quick-websql/) - WebSQL wrapper for quick-sqlite
+   - [pouchdb-adapter-react-native-sqlite](https://github.com/craftzdog/pouchdb-adapter-react-native-sqlite) - PouchDB adapter for SQLite with those two modules
 
 5. Install CocoaPods:
 
    ```sh
-   cd ios && pod install
+   npx pod-install
    ```
 
 ### Configure
@@ -47,29 +56,12 @@ Check out [a small example](./example).
 1. Make a `shim.js`:
 
    ```js
-   import "react-native-get-random-values";
-   import { decode, encode } from "base-64";
+   import {shim} from 'react-native-quick-base64'
 
-   if (typeof process === "undefined") {
-     global.process = require("process");
-   } else {
-     const bProcess = require("process");
-     for (var p in bProcess) {
-       if (!(p in process)) {
-         process[p] = bProcess[p];
-       }
-     }
-   }
+   shim()
 
-   if (!global.btoa) {
-     global.btoa = encode;
-   }
-
-   if (!global.atob) {
-     global.atob = decode;
-   }
-
-   process.browser = true;
+   // Avoid using node dependent modules
+   process.browser = true
    ```
 
    then, require it at the beginning of your `index.js`.
@@ -84,20 +76,44 @@ Check out [a small example](./example).
          'module-resolver',
          {
            alias: {
-             'pouchdb-md5': 'react-native-pouchdb-md5',
-             'pouchdb-binary-utils':
-               '@craftzdog/pouchdb-binary-utils-react-native',
+             'pouchdb-collate': '@craftzdog/pouchdb-collate-react-native',
            },
          },
        ],
      ],
-   };
+   }
    ```
 
-## See also
+### Initialize
 
-- [craftzdog/react-native-pouchdb-md5: PouchDB utilities for calculating MD5 checksums for React Native](https://github.com/craftzdog/react-native-pouchdb-md5)
-- [craftzdog/pouchdb-adapter-react-native-sqlite: PouchDB adapter using ReactNative SQLite as its backing store](https://github.com/craftzdog/pouchdb-adapter-react-native-sqlite#readme)
+Create `pouchdb.ts` like so:
+
+```ts
+import 'react-native-get-random-values'
+import PouchDB from 'pouchdb-core'
+import HttpPouch from 'pouchdb-adapter-http'
+import replication from 'pouchdb-replication'
+import mapreduce from 'pouchdb-mapreduce'
+import SQLiteAdapterFactory from 'pouchdb-adapter-react-native-sqlite'
+import WebSQLite from 'react-native-quick-websql'
+
+const SQLiteAdapter = SQLiteAdapterFactory(WebSQLite)
+
+export default PouchDB.plugin(HttpPouch)
+  .plugin(replication)
+  .plugin(mapreduce)
+  .plugin(SQLiteAdapter)
+```
+
+Then, import and use it as usual:
+
+```ts
+import PouchDB from './pouchdb'
+
+const db = new PouchDB('mydb.db', {
+  adapter: 'react-native-sqlite'
+})
+```
 
 ## Contributing
 
