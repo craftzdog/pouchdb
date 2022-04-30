@@ -14,6 +14,9 @@ var queryParams = {};
 if (process.env.ADAPTERS) {
   queryParams.adapters = process.env.ADAPTERS;
 }
+if (process.env.VIEW_ADAPTERS) {
+  queryParams.viewAdapters = process.env.VIEW_ADAPTERS;
+}
 if (process.env.AUTO_COMPACTION) {
   queryParams.autoCompaction = true;
 }
@@ -25,9 +28,6 @@ if (process.env.PLUGINS) {
 }
 if (process.env.COUCH_HOST) {
   queryParams.couchHost = process.env.COUCH_HOST;
-}
-if (process.env.ADAPTER) {
-  queryParams.adapter = process.env.ADAPTER;
 }
 if (process.env.ITERATIONS) {
   queryParams.iterations = process.env.ITERATIONS;
